@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>My Task Dashboard</title>
+	<style>
+		body { font-family: Arial, sans-serif; background: #f4f5f7; margin: 0; padding: 40px; }
+		.container { max-width: 800px; margin: auto; }
+		h1 { margin-bottom: 5px; }
+		.subtitle { color: #666; margin-bottom: 30px; }
+		.task-form { background: white; padding: 20px; border-radius: 12px; margin-bottom: 25px; }
+		input, select, button { padding: 10px; margin: 5px; border-radius: 6px; border: 1px solid #ccc; }
+		#taskInput { width: 95%; font-size: 16px; }
+		button { cursor: pointer; }
+		.add-button { background: #222; color: white; border: none; }
+		.task { background: white; padding: 15px; margin-bottom: 10px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; }
+		.task-info { flex-grow: 1; }
+		.task-title { font-size: 18px; font-weight: bold; }
+		.task-details { font-size: 13px; color: #666; margin-top: 5px; }
+		.completed .task-title { text-decoration: line-through; color: #999; }
+		.delete-button { background: #eee; border: none; }
+	</style>
+</head>
+<body>
+	<div class="container">
+		<h1>My Task Dashboard</h1>
+		<div class="subtitle">Everything I need to get done, in one place.</div>
+		<div class="task-form">
+			<input id="taskInput" type="text" placeholder="What do you need to do?">
+			<br>
+			<select id="category">
+				<option>Personal</option><option>Home</option><option>Work</option><option>Wedding</option><option>Money</option>
+			</select>
+			<select id="priority">
+				<option>Low</option><option selected>Medium</option><option>High</option>
+			</select>
+			<input id="dueDate" type="date">
+			<button class="add-button" onclick="addTask()">Add Task</button>
+		</div>
+		<div id="taskList"></div>
+	</div>
+	<script>
+		let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+		function saveTasks() { localStorage.setItem("tasks", JSON.stringify(tasks)); }
+
+		function addTask() {
+			const taskInput = document.getElementById("taskInput");
+			if (taskInput.value.trim() === "") return;
+			tasks.push({
+				id: Date.now(), text: taskInput.value.trim(),
+				category: document.getElementById("category").value,
+				priority: document.getElementById("priority").value,
+				dueDate: document.getElementById("dueDate").value, completed: false
+			});
+			saveTasks();
+			taskInput.value = "";
+			document.getElementById("dueDate").value = "";
+			displayTasks();
+		}
+
+		function toggleTask(id) {
+			const task = tasks.find(task => task.id === id);
+			if (task) task.completed = !task.completed;
+			saveTasks(); displayTasks();
+		}
+
+		function deleteTask(id) {
+			tasks = tasks.filter(task => task.id !== id);
+			saveTasks(); displayTasks();
+		}
+
+		function displayTasks() {
+			const taskList = document.getElementById("taskList");
+			taskList.innerHTML = "";
+			tasks.forEach(task => {
+				const taskElement = document.createElement("div");
+				taskElement.className = "task" + (task.completed ? " completed" : "");
+				const info = document.createElement("div");
+				info.className = "task-info";
+				const title = document.createElement("div");
+				title.className = "task-title"; title.textContent = task.text;
+				const details = document.createElement("div");
+				details.className = "task-details";
+				details.textContent = task.category + " • " + task.priority + " priority" + (task.dueDate ? " • Due " + task.dueDate : "");
+				info.append(title, details);
+				const completeButton = document.createElement("button");
+				completeButton.textContent = task.completed ? "Undo" : "Done";
+				completeButton.onclick = () => toggleTask(task.id);
+				const deleteButton = document.createElement("button");
+				deleteButton.textContent = "Delete"; deleteButton.className = "delete-button";
+				deleteButton.onclick = () => deleteTask(task.id);
+				taskElement.append(info, completeButton, deleteButton);
+				taskList.appendChild(taskElement);
+			});
+		}
+
+		displayTasks();
+	</script>
+</body>
+</html>
