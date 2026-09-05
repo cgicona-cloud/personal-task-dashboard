@@ -20,6 +20,45 @@
 		.task-details { font-size: 13px; color: #666; margin-top: 5px; }
 		.completed .task-title { text-decoration: line-through; color: #999; }
 		.delete-button { background: #eee; border: none; }
+		@media (max-width: 600px) {
+    body {
+        padding: 20px 12px;
+    }
+
+    .container {
+        width: 100%;
+    }
+
+    .task-form {
+        padding: 15px;
+    }
+
+    #taskInput {
+        width: 100%;
+        box-sizing: border-box;
+        margin-bottom: 10px;
+    }
+
+    select,
+    input[type="date"],
+    .add-button {
+        width: 100%;
+        box-sizing: border-box;
+        margin: 5px 0;
+        min-height: 44px;
+        font-size: 16px;
+    }
+
+    .task {
+        align-items: flex-start;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .task-info {
+        width: 100%;
+    }
+}
 	</style>
 </head>
 <body>
